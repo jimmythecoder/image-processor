@@ -1,0 +1,48 @@
+{
+    "name": "image-resize",
+    "displayName": "Image Resize",
+    "version": "0.1.0",
+    "type": "module",
+    "bin": {
+        "cdk": "bin/iac.js"
+    },
+    "scripts": {
+        "start": "NODE_ENV=development tsx watch src/lambda.mts",
+        "build": "node build.js",
+        "watch": "tsc -w",
+        "cdk": "cdk"
+    },
+    "devDependencies": {
+        "@types/node": "20.12.7",
+        "aws-cdk": "2.138.0",
+        "ts-node": "^10.9.2",
+        "typescript": "~5.4.5"
+    },
+    "dependencies": {
+        "@aws-sdk/client-lambda": "^3.556.0",
+        "@aws-sdk/client-s3": "^3.556.0",
+        "@img/sharp-linux-arm64": "^0.33.3",
+        "@types/aws-lambda": "^8.10.137",
+        "aws-cdk-lib": "2.138.0",
+        "aws-lambda": "^1.0.7",
+        "constructs": "^10.3.0",
+        "dotenv": "^16.4.5",
+        "esbuild": "^0.20.2",
+        "sharp": "0.32.6",
+        "source-map-support": "^0.5.21"
+    },
+    "optionalDependencies": {
+        "sharp": "0.32.6"
+    },
+    "pnpm": {
+        "supportedArchitectures": {
+            "os": [
+                "current",
+                "linux"
+            ],
+            "cpu": [
+                "arm64"
+            ]
+        }
+    }
+}
