@@ -9,6 +9,10 @@ const bucket = process.env.S3_BUCKET_NAME;
 export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
     try {
         const filename = event.pathParameters?.image;
+        const width = event.queryStringParameters?.width;
+        const height = event.queryStringParameters?.height;
+        const fit = (event.queryStringParameters?.fit ?? "cover") as keyof Sharp.FitEnum;
+        const format = (event.queryStringParameters?.format ?? "avif") as keyof Sharp.FormatEnum;
 
         if (!filename) {
             throw new Error("missing image filename");
@@ -33,11 +37,15 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
         const content_buffer = Buffer.concat(await stream.toArray());
 
-        const instance = await Sharp(content_buffer).resize(100, 100, {
-            fit: "cover",
-        });
+        const sharpInstance = Sharp(content_buffer);
 
-        const resizedImageBuffer = await instance.avif({ quality: 80 }).toFormat("avif").toBuffer();
+        if (width && height) {
+            sharpInstance.resize(parseInt(width, 10), parseInt(height, 10), {
+                fit,
+            });
+        }
+
+        const resizedImageBuffer = await sharpInstance.avif({ quality: 80 }).toFormat(format).toBuffer();
 
         return {
             statusCode: 200,
@@ -54,7 +62,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         return {
             statusCode: 500,
             body: JSON.stringify({
-                message: "Something went wrong.",
+                message: (err as Error).message,
             }),
         };
     }
