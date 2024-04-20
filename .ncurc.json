@@ -1,0 +1,4 @@
+{
+    "reject": ["sharp"],
+    "upgrade": true
+}

@@ -53,6 +53,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             headers: {
                 "Content-Type": "image/avif",
                 "Content-Length": resizedImageBuffer.byteLength.toString(),
+                "Cache-Control": "public, max-age=3600, immutable",
                 // "Content-Disposition": `attachment; filename="sharky.avif`,
             },
             body: resizedImageBuffer.toString("base64"),
