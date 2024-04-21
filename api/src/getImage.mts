@@ -59,7 +59,6 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
         switch (format) {
             case "jpeg":
-            case "jpg":
                 resizedImageBuffer = await sharpInstance.jpeg({ quality: 80 }).toFormat(format).toBuffer();
                 break;
             case "webp":
@@ -81,7 +80,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             statusCode: 200,
             isBase64Encoded: true,
             headers: {
-                "Content-Type": "image/avif",
+                "Content-Type": `image/${format}`,
                 "Content-Length": resizedImageBuffer.byteLength.toString(),
                 "Cache-Control": "public, max-age=3600, immutable",
             },
