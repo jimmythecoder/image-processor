@@ -21,16 +21,16 @@ export class ApiStack extends cdk.Stack {
             entry: `./src/getImage.mts`,
             functionName: `${id}-api`,
             description: `Image API`,
-            tracing: cdk.aws_lambda.Tracing.ACTIVE,
+            tracing: cdk.aws_lambda.Tracing.DISABLED,
             memorySize: 2048,
             timeout: cdk.Duration.seconds(30),
             runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
             architecture: cdk.aws_lambda.Architecture.ARM_64,
             handler: "handler",
-            adotInstrumentation: {
-                execWrapper: cdk.aws_lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
-                layerVersion: cdk.aws_lambda.AdotLayerVersion.fromJavaScriptSdkLayerVersion(cdk.aws_lambda.AdotLambdaLayerJavaScriptSdkVersion.LATEST),
-            },
+            // adotInstrumentation: {
+            //     execWrapper: cdk.aws_lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+            //     layerVersion: cdk.aws_lambda.AdotLayerVersion.fromJavaScriptSdkLayerVersion(cdk.aws_lambda.AdotLambdaLayerJavaScriptSdkVersion.LATEST),
+            // },
             bundling: {
                 platform: "node",
                 format: cdk.aws_lambda_nodejs.OutputFormat.ESM,

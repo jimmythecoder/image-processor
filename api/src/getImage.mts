@@ -14,6 +14,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         const fit = (event.queryStringParameters?.fit ?? "cover") as keyof Sharp.FitEnum;
         const format = (event.queryStringParameters?.format ?? "avif") as keyof Sharp.FormatEnum;
 
+        console.debug("Processing image", filename, "params", width, height, fit, format);
+
         if (!filename) {
             throw new Error("missing image filename");
         }
@@ -29,6 +31,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             })
         );
 
+        console.debug("Got image from S3", response.ContentType);
+
         const stream = response.Body;
 
         if (!(stream instanceof Readable)) {
@@ -37,7 +41,11 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
         const content_buffer = Buffer.concat(await stream.toArray());
 
+        console.debug("Read image from stream", content_buffer.length);
+
         const sharpInstance = Sharp(content_buffer);
+
+        console.debug("Sharp instance created from buffer");
 
         if (width && height) {
             sharpInstance.resize(parseInt(width, 10), parseInt(height, 10), {
@@ -46,6 +54,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         }
 
         const resizedImageBuffer = await sharpInstance.avif({ quality: 80 }).toFormat(format).toBuffer();
+
+        console.debug("Resized image", resizedImageBuffer.length);
 
         return {
             statusCode: 200,
