@@ -22,7 +22,7 @@ export class ApiStack extends cdk.Stack {
             functionName: `${id}-api`,
             description: `Image API`,
             tracing: cdk.aws_lambda.Tracing.DISABLED,
-            memorySize: 2048,
+            memorySize: 8192,
             timeout: cdk.Duration.seconds(30),
             runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
             architecture: cdk.aws_lambda.Architecture.ARM_64,
