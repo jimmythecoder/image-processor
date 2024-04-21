@@ -53,7 +53,27 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             });
         }
 
-        const resizedImageBuffer = await sharpInstance.avif({ quality: 80 }).toFormat(format).toBuffer();
+        console.debug("Resized image", width, height, fit, format);
+
+        let resizedImageBuffer: Buffer;
+
+        switch (format) {
+            case "jpeg":
+            case "jpg":
+                resizedImageBuffer = await sharpInstance.jpeg({ quality: 80 }).toFormat(format).toBuffer();
+                break;
+            case "webp":
+                resizedImageBuffer = await sharpInstance.webp({ quality: 80 }).toFormat(format).toBuffer();
+                break;
+            case "png":
+                resizedImageBuffer = await sharpInstance.png({ quality: 80 }).toFormat(format).toBuffer();
+                break;
+            case "avif":
+                resizedImageBuffer = await sharpInstance.avif({ quality: 80 }).toFormat(format).toBuffer();
+                break;
+            default:
+                throw new Error(`Unsupported format ${format}`);
+        }
 
         console.debug("Resized image", resizedImageBuffer.length);
 
@@ -64,7 +84,6 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
                 "Content-Type": "image/avif",
                 "Content-Length": resizedImageBuffer.byteLength.toString(),
                 "Cache-Control": "public, max-age=3600, immutable",
-                // "Content-Disposition": `attachment; filename="sharky.avif`,
             },
             body: resizedImageBuffer.toString("base64"),
         };
