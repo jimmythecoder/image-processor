@@ -1,6 +1,7 @@
 {
-    "name": "image-resize",
-    "displayName": "Image Resize",
+    "name": "image-processor",
+    "displayName": "Image Processor",
+    "description": "An image resizer / processor using Sharp and AWS Lambda",
     "version": "0.1.0",
     "type": "module",
     "bin": {

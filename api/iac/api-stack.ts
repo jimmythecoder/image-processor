@@ -6,7 +6,7 @@ export class ApiStack extends cdk.Stack {
         super(scope, id, props);
 
         this.tags.setTag("app", id);
-        this.tags.setTag("awsApplication", "arn:aws:resource-groups:ap-southeast-2:427820939238:group/image-resize/07x17y8ho682l14viaqe86pct1");
+        this.tags.setTag("awsApplication", process.env.AWS_APPLICATION_ARN!);
         this.tags.setTag("AppManagerCFNStackKey", this.stackName);
 
         const bucket = new cdk.aws_s3.Bucket(this, `${id}-bucket`, {
@@ -22,8 +22,8 @@ export class ApiStack extends cdk.Stack {
             functionName: `${id}-api`,
             description: `Image API`,
             tracing: cdk.aws_lambda.Tracing.ACTIVE,
-            memorySize: 1024,
-            timeout: cdk.Duration.seconds(10),
+            memorySize: 2048,
+            timeout: cdk.Duration.seconds(30),
             runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
             architecture: cdk.aws_lambda.Architecture.ARM_64,
             handler: "handler",
@@ -83,7 +83,7 @@ export class ApiStack extends cdk.Stack {
         });
 
         apiGateway.addRoutes({
-            path: "/assets/{image}",
+            path: "/assets/images/{image}",
             methods: [cdk.aws_apigatewayv2.HttpMethod.GET],
             integration: new cdk.aws_apigatewayv2_integrations.HttpLambdaIntegration("get-image", apiHandler),
         });
