@@ -43,7 +43,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
         console.debug("Read image from stream", content_buffer.length);
 
-        const sharpInstance = Sharp(content_buffer, { sequentialRead: true });
+        const sharpInstance = Sharp(content_buffer);
 
         console.debug("Sharp instance created from buffer");
 
