@@ -1,6 +1,7 @@
 import { Context, APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import Sharp from "sharp";
+import { performance } from "perf_hooks";
 import { Readable } from "stream";
 
 const client = new S3Client();
@@ -13,7 +14,6 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         const height = event.queryStringParameters?.height;
         const fit = (event.queryStringParameters?.fit ?? "cover") as keyof Sharp.FitEnum;
         const format = (event.queryStringParameters?.format ?? "avif") as keyof Sharp.FormatEnum;
-        const performance = new Performance();
 
         performance.mark("start");
         console.debug("Performance", performance.now());
@@ -64,7 +64,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
         performance.mark("resize_image");
         const resizeImageTiming = performance.measure("resize_image", "read_image", "resize_image");
-        console.debug("Resized image", width, height, fit, format, "timing", resizeImageTiming.duration);
+        console.debug("Resize image", width, height, fit, format, "timing", resizeImageTiming.duration);
 
         let resizedImageBuffer: Buffer;
 
