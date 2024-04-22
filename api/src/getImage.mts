@@ -13,7 +13,10 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         const height = event.queryStringParameters?.height;
         const fit = (event.queryStringParameters?.fit ?? "cover") as keyof Sharp.FitEnum;
         const format = (event.queryStringParameters?.format ?? "avif") as keyof Sharp.FormatEnum;
+        const performance = new Performance();
 
+        performance.mark("start");
+        console.debug("Performance", performance.now());
         console.debug("Processing image", filename, "params", width, height, fit, format);
 
         if (!filename) {
@@ -31,7 +34,9 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             })
         );
 
-        console.debug("Got image from S3", response.ContentType);
+        performance.mark("fetch_image");
+        const fetchImageTiming = performance.measure("fetch_image", "start", "fetch_image");
+        console.debug("Got image from S3", response.ContentType, "timing", fetchImageTiming.duration);
 
         const stream = response.Body;
 
@@ -41,11 +46,15 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
         const content_buffer = Buffer.concat(await stream.toArray());
 
-        console.debug("Read image from stream", content_buffer.length);
+        performance.mark("read_image");
+        const readImageTiming = performance.measure("read_image", "fetch_image", "read_image");
+        console.debug("Read image from stream", content_buffer.length, "timing", readImageTiming.duration);
 
         const sharpInstance = Sharp(content_buffer);
 
-        console.debug("Sharp instance created from buffer");
+        performance.mark("sharp_instance");
+        const sharpInstanceTiming = performance.measure("sharp_instance", "fetch_image", "sharp_instance");
+        console.debug("Sharp instance created from buffer", "timing", sharpInstanceTiming.duration);
 
         if (width && height) {
             sharpInstance.resize(parseInt(width, 10), parseInt(height, 10), {
@@ -53,7 +62,9 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             });
         }
 
-        console.debug("Resized image", width, height, fit, format);
+        performance.mark("resize_image");
+        const resizeImageTiming = performance.measure("resize_image", "read_image", "resize_image");
+        console.debug("Resized image", width, height, fit, format, "timing", resizeImageTiming.duration);
 
         let resizedImageBuffer: Buffer;
 
@@ -74,7 +85,9 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
                 throw new Error(`Unsupported format ${format}`);
         }
 
-        console.debug("Resized image", resizedImageBuffer.length);
+        performance.mark("format_image");
+        const formatImageTiming = performance.measure("format_image", "resize_image", "format_image");
+        console.debug("Resized image", resizedImageBuffer.length, "timing", formatImageTiming.duration);
 
         return {
             statusCode: 200,
