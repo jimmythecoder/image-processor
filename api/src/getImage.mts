@@ -1,7 +1,7 @@
 import { Context, APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import Sharp from "sharp";
-import { performance } from "perf_hooks";
+import { performance } from "node:perf_hooks";
 import { Readable } from "stream";
 
 const client = new S3Client();
