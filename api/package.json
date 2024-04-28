@@ -9,7 +9,7 @@
     },
     "scripts": {
         "start": "NODE_ENV=development tsx watch src/lambda.mts",
-        "build": "node build.js",
+        "build": "node build.js && pnpm --config.platform=linux rebuild sharp",
         "watch": "tsc -w",
         "cdk": "cdk"
     },

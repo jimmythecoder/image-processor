@@ -4,7 +4,7 @@
         "module": "ESNext",
         "moduleDetection": "auto",
         "moduleResolution": "Bundler",
-        "types": ["node"],
+        "types": ["node", "lambda.d.ts"],
         "outDir": "./dist",
         "preserveConstEnums": true,
         "isolatedModules": true,
@@ -24,7 +24,7 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": false,
         "strictPropertyInitialization": false,
-        "typeRoots": ["./node_modules/@types"]
+        "typeRoots": ["./node_modules/@types", "./types"]
     },
     "exclude": ["node_modules", "cdk.out"]
 }

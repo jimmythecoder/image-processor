@@ -9,10 +9,13 @@ dotenv.config();
 
 const app = new cdk.App();
 
-new ApiStack(app, "image-processor", {
+const api = new ApiStack(app, "image-processor", {
     env: { account: process.env.AWS_ACCOUNT_ID, region: process.env.AWS_REGION },
 });
 
 new WebStack(app, "demo-blog", {
     env: { account: process.env.AWS_ACCOUNT_ID, region: process.env.AWS_REGION },
+    ApiFunctionURL: api.ApiFunctionURL,
+    uploadsBucket: api.bucket,
+    oai: api.oai,
 });

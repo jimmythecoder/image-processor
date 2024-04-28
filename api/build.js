@@ -15,7 +15,7 @@ esbuild.build({
             const __dirname = import.meta.url;
             const require = createRequire(import.meta.url);`,
     },
-    entryPoints: ["./src/getImage.mts"],
+    entryPoints: ["./src/resizeImageFromUrl.mts"],
     external: ["aws-sdk", "@aws-sdk/client-ssm", "sharp"],
     define: {
         "process.env.NODE_ENV": '"production"',

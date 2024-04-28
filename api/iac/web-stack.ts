@@ -1,8 +1,14 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
+type Props = cdk.StackProps & {
+    ApiFunctionURL: cdk.aws_lambda.FunctionUrl;
+    uploadsBucket: cdk.aws_s3.Bucket;
+    oai: cdk.aws_cloudfront.OriginAccessIdentity;
+};
+
 export class WebStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props: Props) {
         super(scope, id, props);
 
         this.tags.setTag("app", id);
@@ -26,6 +32,8 @@ export class WebStack extends cdk.Stack {
             hostedZoneId: process.env.ROUTE53_HOSTED_ZONE_ID!,
             zoneName: process.env.ROOT_DOMAIN!,
         });
+
+        const apiStreamingOrigin = new cdk.aws_cloudfront_origins.FunctionUrlOrigin(props.ApiFunctionURL);
 
         const certificate = cdk.aws_certificatemanager.Certificate.fromCertificateArn(this, `${id}-certificate`, process.env.CERTIFICATE_ARN!);
 
@@ -63,15 +71,52 @@ export class WebStack extends cdk.Stack {
                 }),
             },
             additionalBehaviors: {
-                "/assets/images/*": {
+                "/uploads/static/*": {
+                    origin: new cdk.aws_cloudfront_origins.S3Origin(props.uploadsBucket, {
+                        originAccessIdentity: props.oai,
+                        originShieldEnabled: true,
+                        originShieldRegion: process.env.AWS_REGION,
+                    }),
+                    allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+                    viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    cachePolicy: new cdk.aws_cloudfront.CachePolicy(this, `${id}-uploads-static-assets-cache`, {
+                        cookieBehavior: cdk.aws_cloudfront.CacheCookieBehavior.none(),
+                        headerBehavior: cdk.aws_cloudfront.CacheHeaderBehavior.none(),
+                        queryStringBehavior: cdk.aws_cloudfront.CacheQueryStringBehavior.none(),
+                        comment: `Static assets cache policy`,
+                        defaultTtl: cdk.Duration.days(30),
+                        minTtl: cdk.Duration.days(15),
+                        maxTtl: cdk.Duration.days(365),
+                        enableAcceptEncodingBrotli: true,
+                        enableAcceptEncodingGzip: true,
+                    }),
+                },
+                "/uploads/resize/*": {
                     origin: new cdk.aws_cloudfront_origins.HttpOrigin(process.env.API_DOMAIN!),
                     allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD,
                     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
-                    cachePolicy: new cdk.aws_cloudfront.CachePolicy(this, `${id}-images-cache`, {
+                    cachePolicy: new cdk.aws_cloudfront.CachePolicy(this, `${id}-uploads-resize-image-cache`, {
                         cookieBehavior: cdk.aws_cloudfront.CacheCookieBehavior.none(),
                         headerBehavior: cdk.aws_cloudfront.CacheHeaderBehavior.none(),
                         queryStringBehavior: cdk.aws_cloudfront.CacheQueryStringBehavior.allowList("width", "height", "fit", "format"),
-                        comment: `Images Cache policy ${process.env.WEB_DOMAIN}`,
+                        comment: `S3 image cache policy ${process.env.WEB_DOMAIN}`,
+                        defaultTtl: cdk.Duration.days(30),
+                        minTtl: cdk.Duration.days(15),
+                        maxTtl: cdk.Duration.days(365),
+                        enableAcceptEncodingBrotli: true,
+                        enableAcceptEncodingGzip: true,
+                    }),
+                },
+                "/uploads/stream/*": {
+                    origin: apiStreamingOrigin,
+                    allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+                    originRequestPolicy: cdk.aws_cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+                    viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+                    cachePolicy: new cdk.aws_cloudfront.CachePolicy(this, `${id}-uploads-streaming-image-cache`, {
+                        cookieBehavior: cdk.aws_cloudfront.CacheCookieBehavior.none(),
+                        headerBehavior: cdk.aws_cloudfront.CacheHeaderBehavior.none(),
+                        queryStringBehavior: cdk.aws_cloudfront.CacheQueryStringBehavior.allowList("width", "height", "fit", "format"),
+                        comment: `Streaming image cache policy ${process.env.WEB_DOMAIN}`,
                         defaultTtl: cdk.Duration.days(30),
                         minTtl: cdk.Duration.days(15),
                         maxTtl: cdk.Duration.days(365),
@@ -85,7 +130,7 @@ export class WebStack extends cdk.Stack {
                         originShieldEnabled: true,
                         originShieldRegion: process.env.AWS_REGION,
                     }),
-                    allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
+                    allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD,
                     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                     cachePolicy: new cdk.aws_cloudfront.CachePolicy(this, `${id}-assets-cache`, {
                         cookieBehavior: cdk.aws_cloudfront.CacheCookieBehavior.none(),
