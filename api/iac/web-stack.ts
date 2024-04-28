@@ -110,7 +110,7 @@ export class WebStack extends cdk.Stack {
                 "/uploads/stream/*": {
                     origin: apiStreamingOrigin,
                     allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-                    originRequestPolicy: cdk.aws_cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+                    // originRequestPolicy: cdk.aws_cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
                     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
                     cachePolicy: new cdk.aws_cloudfront.CachePolicy(this, `${id}-uploads-streaming-image-cache`, {
                         cookieBehavior: cdk.aws_cloudfront.CacheCookieBehavior.none(),

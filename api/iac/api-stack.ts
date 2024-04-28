@@ -3,7 +3,6 @@ import { Construct } from "constructs";
 
 export class ApiStack extends cdk.Stack {
     public ApiFunctionURL: cdk.aws_lambda.FunctionUrl;
-    public ApiFunction: cdk.aws_lambda_nodejs.NodejsFunction;
     public bucket: cdk.aws_s3.Bucket;
     public oai: cdk.aws_cloudfront.OriginAccessIdentity;
 
@@ -80,7 +79,6 @@ export class ApiStack extends cdk.Stack {
             },
         });
 
-        this.ApiFunction = streamingApiHandler;
         this.ApiFunctionURL = streamingApiHandler.addFunctionUrl({
             authType: cdk.aws_lambda.FunctionUrlAuthType.NONE,
             invokeMode: cdk.aws_lambda.InvokeMode.RESPONSE_STREAM,
