@@ -63,7 +63,7 @@ export const handler = awslambda.streamifyResponse(async (event, responseStream)
                 transformer.png({ quality: 80 }).toFormat(format);
                 break;
             case "avif":
-                transformer.avif({ quality: 80 }).toFormat(format);
+                transformer.avif({ quality: 60, chromaSubsampling: "4:2:0" }).toFormat(format);
                 break;
             default:
                 throw new Error(`Unsupported format ${format}`);
