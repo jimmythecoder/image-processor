@@ -41,7 +41,7 @@ export const handler = awslambda.streamifyResponse(async (event, responseStream)
         const stream = Readable.fromWeb(response.body as any);
 
         if (!(stream instanceof Readable)) {
-            throw new Error("stream is not readable");
+            throw new Error("Stream is not readable");
         }
 
         const transformer = Sharp();
@@ -70,12 +70,16 @@ export const handler = awslambda.streamifyResponse(async (event, responseStream)
         }
 
         transformer.on("info", (image) => {
-            console.log(`Image height is ${image.height}`);
+            console.log(`Image height: ${image.height}, size: ${image.size} bytes`);
+        });
+
+        transformer.on("error", (err) => {
+            console.error("Image transform error", err);
         });
 
         responseStream.setContentType(`image/${format}`);
 
-        const s2 = awslambda.HttpResponseStream.from(responseStream, {
+        const streamWithHeaders = awslambda.HttpResponseStream.from(responseStream, {
             statusCode: 200,
             headers: {
                 "Content-Type": `image/${format}`,
@@ -83,8 +87,9 @@ export const handler = awslambda.streamifyResponse(async (event, responseStream)
             },
         });
 
-        return stream.pipe(transformer).pipe(s2);
+        stream.pipe(transformer).pipe(streamWithHeaders);
     } catch (err) {
+        console.error("Error processing image", err);
         const errorStream = awslambda.HttpResponseStream.from(responseStream, {
             statusCode: (err as Error).cause ?? 500,
             headers: {
@@ -95,6 +100,6 @@ export const handler = awslambda.streamifyResponse(async (event, responseStream)
 
         errorStream.write((err as Error).message);
 
-        return errorStream.end();
+        errorStream.end();
     }
 });

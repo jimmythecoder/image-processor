@@ -1,0 +1,20 @@
+{
+    "version": "2.0",
+    "rawPath": "/uploads/stream/1.jpeg",
+    "rawQueryString": "width=250&height=200&format=jpeg",
+    "headers": {
+        "header1": "value1"
+    },
+    "queryStringParameters": {
+        "width": "300",
+        "height": "150",
+        "format": "jpeg"
+    },
+    "requestContext": {
+        "http": {
+            "method": "GET",
+            "path": "/uploads/stream/1.jpeg"
+        }
+    },
+    "isBase64Encoded": false
+}
