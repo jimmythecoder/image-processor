@@ -11,7 +11,8 @@
         "start": "NODE_ENV=development tsx watch src/lambda.mts",
         "build": "node build.js && pnpm --config.platform=linux rebuild sharp",
         "watch": "tsc -w",
-        "cdk": "cdk"
+        "cdk": "cdk",
+        "destroy": "cdk destroy --all"
     },
     "devDependencies": {
         "@types/node": "20.12.7",

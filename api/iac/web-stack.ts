@@ -39,7 +39,6 @@ export class WebStack extends cdk.Stack {
 
         const distribution = new cdk.aws_cloudfront.Distribution(this, `${id}-cloudfront`, {
             comment: `CDN for ${process.env.WEB_DOMAIN}`,
-            enableLogging: true,
             defaultBehavior: {
                 origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket, {
                     originAccessIdentity,
