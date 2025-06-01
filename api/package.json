@@ -15,21 +15,21 @@
         "destroy": "cdk destroy --all"
     },
     "devDependencies": {
-        "@types/node": "20.12.7",
-        "aws-cdk": "2.138.0",
+        "@types/node": "22.15.29",
+        "aws-cdk": "2.1017.1",
         "ts-node": "^10.9.2",
-        "typescript": "~5.4.5"
+        "typescript": "~5.8.3"
     },
     "dependencies": {
-        "@aws-sdk/client-lambda": "^3.556.0",
-        "@aws-sdk/client-s3": "^3.556.0",
-        "@img/sharp-linux-arm64": "^0.33.3",
-        "@types/aws-lambda": "^8.10.137",
-        "aws-cdk-lib": "2.138.0",
+        "@aws-sdk/client-lambda": "^3.821.0",
+        "@aws-sdk/client-s3": "^3.821.0",
+        "@img/sharp-linux-arm64": "^0.34.2",
+        "@types/aws-lambda": "^8.10.149",
+        "aws-cdk-lib": "2.199.0",
         "aws-lambda": "^1.0.7",
-        "constructs": "^10.3.0",
-        "dotenv": "^16.4.5",
-        "esbuild": "^0.20.2",
+        "constructs": "^10.4.2",
+        "dotenv": "^16.5.0",
+        "esbuild": "^0.25.5",
         "sharp": "0.32.6",
         "source-map-support": "^0.5.21"
     },
